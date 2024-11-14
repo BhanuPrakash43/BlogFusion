@@ -59,14 +59,14 @@ A full-featured BlogApp designed to allow users to create, read, update, and del
 - **Edit/Delete Posts**: Access your posts and either edit or delete them as needed.
 
 <p align="center">
-  <img src="image1.png" alt="Home Screen" width="200" style="margin-right: 10px;"/>
-  <img src="image2.png" alt="Login Screen" width="200" style="margin-right: 10px;"/>
-  <img src="image3.png" alt="Create Post" width="200" style="margin-right: 10px;"/>
-  <img src="image4.png" alt="Saved Posts" width="200"/>
-  <img src="image5.png" alt="Home Screen" width="200" style="margin-right: 10px;"/>
-  <img src="image6.png" alt="Login Screen" width="200" style="margin-right: 10px;"/>
-  <img src="image7.png" alt="Create Post" width="200" style="margin-right: 10px;"/>
-  <img src="image8.png" alt="Saved Posts" width="200"/>
+  <img src="app/src/main/res/drawable/screenshots/image1.png" alt="Home Screen" width="200" style="margin-right: 10px;"/>
+  <img src="app/src/main/res/drawable/screenshots/image2.png" alt="Login Screen" width="200" style="margin-right: 10px;"/>
+  <img src="app/src/main/res/drawable/screenshots/image3.png" alt="Create Post" width="200" style="margin-right: 10px;"/>
+  <img src="app/src/main/res/drawable/screenshots/image4.png" alt="Saved Posts" width="200"/>
+  <img src="app/src/main/res/drawable/screenshots/image5.png" alt="Home Screen" width="200" style="margin-right: 10px;"/>
+  <img src="app/src/main/res/drawable/screenshots/image6.png" alt="Login Screen" width="200" style="margin-right: 10px;"/>
+  <img src="app/src/main/res/drawable/screenshots/image7.png" alt="Create Post" width="200" style="margin-right: 10px;"/>
+  <img src="app/src/main/res/drawable/screenshots/image8.png" alt="Saved Posts" width="200"/>
 </p>
 
 
