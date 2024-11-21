@@ -1,18 +1,26 @@
 package com.example.blogapp
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.setMargins
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.blogapp.Model.UserData
-import com.example.blogapp.databinding.ActivitySignInAndRegistrationBinding
 import com.example.blogapp.register.WelcomeActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -20,26 +28,40 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class SignInAndRegistrationActivity : AppCompatActivity() {
-    private val binding: ActivitySignInAndRegistrationBinding by lazy {
-        ActivitySignInAndRegistrationBinding.inflate(layoutInflater)
-    }
+
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
+    private lateinit var registerUserImage: ImageView
     private val PICK_IMAGE_REQUEST = 1
     private var imageUri: Uri? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(binding.root)
+        setContentView(R.layout.activity_sign_in_and_registration)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding.signinBackImageBtn.setOnClickListener {
+        val signInBackImageBtn = findViewById<ImageButton>(R.id.signinBackImageBtn)
+        val loginEmailAddress = findViewById<EditText>(R.id.login_email_address)
+        val loginPassword = findViewById<EditText>(R.id.login_password)
+        val loginButton = findViewById<Button>(R.id.login_button)
+        val registerNewHere = findViewById<TextView>(R.id.register_new_here)
+        val registerCardView = findViewById<CardView>(R.id.cardView)
+        registerUserImage = findViewById(R.id.registerUserImage)
+        val registerName = findViewById<EditText>(R.id.register_name)
+        val registerEmail = findViewById<EditText>(R.id.register_email)
+        val registerPassword = findViewById<EditText>(R.id.register_password)
+        val registerButton = findViewById<Button>(R.id.register_button)
+        val textBlogFusion = findViewById<TextView>(R.id.textBlogFusion)
+
+        signInBackImageBtn.setOnClickListener {
             startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
         }
@@ -53,23 +75,20 @@ class SignInAndRegistrationActivity : AppCompatActivity() {
         // Adjust visibility for login
         val action = intent.getStringExtra("action")
         if (action == "login") {
-            binding.loginEmailAddress.visibility = View.VISIBLE
-            binding.loginPassword.visibility = View.VISIBLE
-            binding.loginButton.visibility = View.VISIBLE
+            loginEmailAddress.visibility = View.VISIBLE
+            loginPassword.visibility = View.VISIBLE
+            loginButton.visibility = View.VISIBLE
 
-            binding.registerNewHere.isEnabled = false
-            binding.registerNewHere.alpha = 0.5f
-            binding.registerButton.isEnabled = false
-            binding.registerButton.alpha = 0.5f
+            registerName.visibility = View.GONE
+            registerEmail.visibility = View.GONE
+            registerPassword.visibility = View.GONE
+            registerCardView.visibility = View.GONE
+            registerNewHere.visibility = View.GONE
+            registerButton.visibility = View.GONE
 
-            binding.registerName.visibility = View.GONE
-            binding.registerEmail.visibility = View.GONE
-            binding.registerPassword.visibility = View.GONE
-            binding.cardView.visibility = View.GONE
-
-            binding.loginButton.setOnClickListener {
-                val loginEmail: String = binding.loginEmailAddress.text.toString()
-                val loginPassword: String = binding.loginPassword.text.toString()
+            loginButton.setOnClickListener {
+                val loginEmail: String = loginEmailAddress.text.toString()
+                val loginPassword: String = loginPassword.text.toString()
 
                 if (loginEmail.isEmpty() || loginPassword.isEmpty()) {
                     Toast.makeText(this, "Please fill all the details", Toast.LENGTH_SHORT).show()
@@ -91,13 +110,19 @@ class SignInAndRegistrationActivity : AppCompatActivity() {
                 }
             }
         } else if (action == "register") {
-            binding.loginButton.isEnabled = false
-            binding.loginButton.alpha = 0.5f
 
-            binding.registerButton.setOnClickListener {
-                val registerName = binding.registerName.text.toString()
-                val registerEmail = binding.registerEmail.text.toString()
-                val registerPassword = binding.registerPassword.text.toString()
+            loginButton.visibility = View.GONE
+            registerNewHere.visibility = View.GONE
+
+            val layoutParams = textBlogFusion.layoutParams as ViewGroup.MarginLayoutParams
+            val marginTop = dpToPx(16, this)
+            layoutParams.setMargins(marginTop)
+            textBlogFusion.layoutParams = layoutParams
+
+            registerButton.setOnClickListener {
+                val registerName = registerName.text.toString()
+                val registerEmail = registerEmail.text.toString()
+                val registerPassword = registerPassword.text.toString()
 
                 if (registerName.isEmpty() || registerEmail.isEmpty() || registerPassword.isEmpty()) {
                     Toast.makeText(this, "Please fill all the details", Toast.LENGTH_SHORT).show()
@@ -137,7 +162,7 @@ class SignInAndRegistrationActivity : AppCompatActivity() {
 
                                     Toast.makeText(
                                         this,
-                                        "User Register Successfully",
+                                        "User Registered Successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
 
@@ -157,10 +182,10 @@ class SignInAndRegistrationActivity : AppCompatActivity() {
         Glide.with(this)
             .load(R.drawable.img2)  // Replace with your default avatar drawable
             .apply(RequestOptions.circleCropTransform())
-            .into(binding.registerUserImage)
+            .into(registerUserImage)
 
         // set on clicklistner for the choose image
-        binding.cardView.setOnClickListener {
+        registerCardView.setOnClickListener {
             val intent = Intent()
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
@@ -178,7 +203,12 @@ class SignInAndRegistrationActivity : AppCompatActivity() {
         Glide.with(this)
             .load(imageUri)
             .apply(RequestOptions.circleCropTransform())
-            .into(binding.registerUserImage)
+            .into(registerUserImage)
 
+    }
+
+    private fun dpToPx(dp: Int, context: Context): Int {
+        val displayMetrics = context.resources.displayMetrics
+        return (dp * displayMetrics.density).toInt()
     }
 }
