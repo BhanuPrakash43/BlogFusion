@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="264dp"
+    android:layout_height="250dp"
     android:layout_marginStart="5dp"
     android:layout_marginTop="5dp"
     android:layout_marginEnd="5dp"
@@ -14,7 +14,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_background">
 
         <TextView
             android:id="@+id/heading"
@@ -25,7 +26,7 @@
             android:fontFamily="@font/montserrat_semibold"
             android:maxLines="2"
             android:text="Please Start Writing Better git Commits"
-            android:textColor="@color/blue"
+            android:textColor="#16977A"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -73,7 +74,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_medium_talic"
             android:text="Oct 28, 2014"
-            android:textColor="@color/date_color"
+            android:textColor="#444444"
             app:layout_constraintEnd_toEndOf="@+id/username"
             app:layout_constraintStart_toStartOf="@+id/cardView3"
             app:layout_constraintTop_toBottomOf="@+id/username" />
@@ -109,7 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:backgroundTint="@color/blue"
+            android:backgroundTint="#1ABC9C"
             android:text="Read More"
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -129,7 +130,7 @@
             android:id="@+id/editButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
+            android:backgroundTint="#2C2C2C"
             android:text="Edit"
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/readMoreButton"
@@ -142,7 +143,7 @@
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/red"
+            android:backgroundTint="#E74C3C"
             android:text="Delete"
             app:cornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/editButton"
