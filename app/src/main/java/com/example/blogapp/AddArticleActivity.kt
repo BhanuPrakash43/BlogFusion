@@ -1,6 +1,8 @@
 package com.example.blogapp
 
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.blogapp.Model.BlogItemModel
 import com.example.blogapp.Model.UserData
-import com.example.blogapp.databinding.ActivityAddArticleBinding
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -20,33 +22,39 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 class AddArticleActivity : AppCompatActivity() {
-    private val binding: ActivityAddArticleBinding by lazy {
-        ActivityAddArticleBinding.inflate(layoutInflater)
-    }
 
     private val databaseReference: DatabaseReference =
-        FirebaseDatabase.getInstance("https://blog-app-219a7-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("blogs")
+        FirebaseDatabase.getInstance("https://blog-app-219a7-default-rtdb.asia-southeast1.firebasedatabase.app")
+            .getReference("blogs")
     private val userReference: DatabaseReference =
-        FirebaseDatabase.getInstance("https://blog-app-219a7-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("users")
+        FirebaseDatabase.getInstance("https://blog-app-219a7-default-rtdb.asia-southeast1.firebasedatabase.app")
+            .getReference("users")
     private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(binding.root)
+        setContentView(R.layout.activity_add_article)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding.addImageButton.setOnClickListener {
+        val backImageButton = findViewById<ImageButton>(R.id.addImageButton)
+        val blogTitle = findViewById<TextInputLayout>(R.id.blogTitle)
+        val blogDescription = findViewById<TextInputLayout>(R.id.blogDescription)
+
+        val addNewBlogButton = findViewById<Button>(R.id.addNewBlogButton)
+
+        backImageButton.setOnClickListener {
             finish()
         }
 
-        binding.addNewBlogButton.setOnClickListener {
-            val title = binding.blogTitle.editText?.text.toString().trim()
-            val description = binding.blogDescription.editText?.text.toString().trim()
+        addNewBlogButton.setOnClickListener {
+
+            val title = blogTitle.editText?.text.toString().trim()
+            val description = blogDescription.editText?.text.toString().trim()
 
             if (title.isEmpty() || description.isEmpty()) {
                 Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show()
@@ -58,46 +66,55 @@ class AddArticleActivity : AppCompatActivity() {
                     val userId = user.uid
 
                     // Fetch username and user profile from database
-                    userReference.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            val userData = snapshot.getValue(UserData::class.java)
-                            if (userData != null) {
-                                val userNameFromDB = userData.name
-                                val userImageUrlFromDB = userData.profileImage
+                    userReference.child(userId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val userData = snapshot.getValue(UserData::class.java)
+                                if (userData != null) {
+                                    val userNameFromDB = userData.name
+                                    val userImageUrlFromDB = userData.profileImage
 
-                                val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
+                                    val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
 
-                                // Create a BlogItemModel
-                                val blogItem = BlogItemModel(
-                                    heading = title,
-                                    username = userNameFromDB,
-                                    date = currentDate,
-                                    userId = userId,
-                                    post = description,
-                                    likeCount = 0,
-                                    profileImage = userImageUrlFromDB
-                                )
+                                    // Create a BlogItemModel
+                                    val blogItem = BlogItemModel(
+                                        heading = title,
+                                        username = userNameFromDB,
+                                        date = currentDate,
+                                        userId = userId,
+                                        post = description,
+                                        likeCount = 0,
+                                        profileImage = userImageUrlFromDB
+                                    )
 
-                                // Generate a unique key for the blog post
-                                val key = databaseReference.push().key
-                                if (key != null) {
-                                    blogItem.postId = key
-                                    val blogReference = databaseReference.child(key)
-                                    blogReference.setValue(blogItem).addOnCompleteListener {
-                                        if (it.isSuccessful) {
-                                            finish()
-                                        } else {
-                                            Toast.makeText(this@AddArticleActivity, "Failed to add blog", Toast.LENGTH_SHORT).show()
+                                    // Generate a unique key for the blog post
+                                    val key = databaseReference.push().key
+                                    if (key != null) {
+                                        blogItem.postId = key
+                                        val blogReference = databaseReference.child(key)
+                                        blogReference.setValue(blogItem).addOnCompleteListener {
+                                            if (it.isSuccessful) {
+                                                finish()
+                                            } else {
+                                                Toast.makeText(
+                                                    this@AddArticleActivity,
+                                                    "Failed to add blog",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        override fun onCancelled(error: DatabaseError) {
-                            Toast.makeText(this@AddArticleActivity, "Failed to retrieve user data", Toast.LENGTH_SHORT).show()
-                        }
-                    })
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(
+                                    this@AddArticleActivity,
+                                    "Failed to retrieve user data",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        })
                 }
             }
         }
