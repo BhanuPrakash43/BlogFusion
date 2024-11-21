@@ -1,16 +1,18 @@
 package com.example.blogapp.adapter
 
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.blogapp.Model.BlogItemModel
 import com.example.blogapp.R
 import com.example.blogapp.ReadMoreActivity
-import com.example.blogapp.databinding.BlogItemBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -27,8 +29,8 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlogViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = BlogItemBinding.inflate(inflater, parent, false)
-        return BlogViewHolder(binding)
+        val view = inflater.inflate(R.layout.blog_item, parent, false)
+        return BlogViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: BlogViewHolder, position: Int) {
@@ -38,64 +40,61 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
 
     override fun getItemCount(): Int {
         return items.size
-
     }
 
-    inner class BlogViewHolder(private val binding: BlogItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class BlogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val heading: TextView = itemView.findViewById(R.id.heading)
+        private val profile: ImageView = itemView.findViewById(R.id.profile)
+        private val username: TextView = itemView.findViewById(R.id.username)
+        private val date: TextView = itemView.findViewById(R.id.date)
+        private val post: TextView = itemView.findViewById(R.id.post)
+        private val readMoreButton: TextView = itemView.findViewById(R.id.readMoreButton)
+        private val likeCount: TextView = itemView.findViewById(R.id.like_count)
+        private val likeButton: ImageButton = itemView.findViewById(R.id.like_button)
+        private val postSaveButton: ImageButton = itemView.findViewById(R.id.post_save_button)
+
         fun bind(blogItemModel: BlogItemModel) {
             val postId = blogItemModel.postId
-            val context = binding.root.context
+            val context = itemView.context
 
-            binding.heading.text = blogItemModel.heading
-            Glide.with(binding.profile.context).load(blogItemModel.profileImage)
-                .into(binding.profile)
+            heading.text = blogItemModel.heading
+            Glide.with(profile.context).load(blogItemModel.profileImage).into(profile)
+            username.text = blogItemModel.username
+            date.text = blogItemModel.date
+            post.text = blogItemModel.post
+            likeCount.text = blogItemModel.likeCount.toString()
 
-            binding.username.text = blogItemModel.username
-            binding.date.text = blogItemModel.date
-            binding.post.text = blogItemModel.post
-            binding.likeCount.text = blogItemModel.likeCount.toString()
-
-            // handling Read More Click listener
-            binding.readMoreButton.setOnClickListener {
-                val context = binding.root.context
+            readMoreButton.setOnClickListener {
                 val intent = Intent(context, ReadMoreActivity::class.java)
                 intent.putExtra("blogItem", blogItemModel)
                 context.startActivity(intent)
             }
 
-            // Check if the current user has liked the post and update the like button image
-
             val postLikeReference = databaseReference.child("blogs").child(postId).child("likes")
-            val currentUserLiked = currentUser?.uid?.let { uid ->
-                postLikeReference.child(uid)
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot.exists()) {
-                                binding.likeButton.setImageResource(R.drawable.redheart)
-                            } else {
-                                binding.likeButton.setImageResource(R.drawable.blackheart)
-                            }
+            postLikeReference.child(currentUser?.uid ?: "")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            likeButton.setImageResource(R.drawable.redheart)
+                        } else {
+                            likeButton.setImageResource(R.drawable.blackheart)
                         }
+                    }
 
-                        override fun onCancelled(error: DatabaseError) {
-                            TODO("Not yet implemented")
-                        }
-                    })
-            }
+                    override fun onCancelled(error: DatabaseError) {}
+                })
 
-            // handle like button clicks
-            binding.likeButton.setOnClickListener {
+            likeButton.setOnClickListener {
                 if (currentUser != null) {
-                    handleLikedButtonClicked(postId, blogItemModel, binding)
+                    handleLikedButtonClicked(postId, blogItemModel)
                 } else {
                     Toast.makeText(
-                        context, "you have to login first to like this post", Toast.LENGTH_SHORT
+                        context,
+                        "You have to login first to like this post",
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
-
-            // Set the initial icon based on the saved status
 
             val userReference = databaseReference.child("users").child(currentUser?.uid ?: "")
             val postSaveReference = userReference.child("saveBlogPosts").child(postId)
@@ -103,23 +102,18 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
             postSaveReference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-                        // if blog is already saved
-                        binding.postSaveButton.setImageResource(R.drawable.redsavesign)
+                        postSaveButton.setImageResource(R.drawable.redsavesign)
                     } else {
-                        // if blog is not saved yet
-                        binding.postSaveButton.setImageResource(R.drawable.redsave)
+                        postSaveButton.setImageResource(R.drawable.redsave)
                     }
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
+                override fun onCancelled(error: DatabaseError) {}
             })
 
-            // handle save button click
-            binding.postSaveButton.setOnClickListener {
+            postSaveButton.setOnClickListener {
                 if (currentUser != null) {
-                    handleSaveButtonClicked(postId, blogItemModel, binding)
+                    handleSaveButtonClicked(postId, blogItemModel, postSaveButton)
                 } else {
                     Toast.makeText(
                         context,
@@ -131,15 +125,9 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
         }
     }
 
-    private fun handleLikedButtonClicked(
-        postId: String,
-        blogItemModel: BlogItemModel,
-        binding: BlogItemBinding
-    ) {
+    private fun handleLikedButtonClicked(postId: String, blogItemModel: BlogItemModel) {
         val userReference = databaseReference.child("users").child(currentUser!!.uid)
         val postLikeReference = databaseReference.child("blogs").child(postId).child("likes")
-
-        // check user has already the post, so unlike it
 
         postLikeReference.child(currentUser.uid)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -149,113 +137,59 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
                             .addOnSuccessListener {
                                 postLikeReference.child(currentUser.uid).removeValue()
                                 blogItemModel.likedBy?.remove(currentUser.uid)
-                                updateLikeButtonImage(binding, false)
+                                notifyDataSetChanged()
 
-                                // decrement the like in the database
                                 val newLikeCount = blogItemModel.likeCount - 1
                                 blogItemModel.likeCount = newLikeCount
                                 databaseReference.child("blogs").child(postId).child("likeCount")
                                     .setValue(newLikeCount)
-                                notifyDataSetChanged()
-                            }.addOnFailureListener { e ->
-                                Log.e("LikedClicked", "Failed to unlike the blog $e")
                             }
                     } else {
-                        // user has not liked the post so like it
                         userReference.child("likes").child(postId).setValue(true)
                             .addOnSuccessListener {
                                 postLikeReference.child(currentUser.uid).setValue(true)
                                 blogItemModel.likedBy?.add(currentUser.uid)
-                                updateLikeButtonImage(binding, true)
-
-                                // Increase the like count in the database
+                                notifyDataSetChanged()
 
                                 val newLikeCount = blogItemModel.likeCount + 1
                                 blogItemModel.likeCount = newLikeCount
                                 databaseReference.child("blogs").child(postId).child("likeCount")
                                     .setValue(newLikeCount)
-                                notifyDataSetChanged()
-                            }.addOnFailureListener { e ->
-                                Log.e("LikedClicked", "Failed to like the blog $e")
                             }
                     }
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-
-                }
+                override fun onCancelled(error: DatabaseError) {}
             })
-    }
-
-    private fun updateLikeButtonImage(binding: BlogItemBinding, liked: Boolean) {
-        if (liked) {
-            binding.likeButton.setImageResource(R.drawable.blackheart)
-        } else {
-            binding.likeButton.setImageResource(R.drawable.redheart)
-        }
     }
 
     private fun handleSaveButtonClicked(
         postId: String,
         blogItemModel: BlogItemModel,
-        binding: BlogItemBinding
+        postSaveButton: ImageButton
     ) {
         val userReference = databaseReference.child("users").child(currentUser!!.uid)
         userReference.child("saveBlogPosts").child(postId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
-                        // If blog is saved then un Save it
                         userReference.child("saveBlogPosts").child(postId).removeValue()
                             .addOnSuccessListener {
-                                // update the ui
-
-                                val clickedBlogItem = items.find { it.postId == postId }
-                                clickedBlogItem?.isSaved = false
+                                items.find { it.postId == postId }?.isSaved = false
                                 notifyDataSetChanged()
-
-                                val context = binding.root.context
-                                Toast.makeText(context, "Blog Unsaved", Toast.LENGTH_SHORT).show()
                             }
-                            .addOnFailureListener {
-                                val context = binding.root.context
-                                Toast.makeText(
-                                    context,
-                                    "Failed to unSave the blog post",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        binding.postSaveButton.setImageResource(R.drawable.redsave)
+                        postSaveButton.setImageResource(R.drawable.redsave)
                     } else {
-                        // Blog is not saved , so save it
                         userReference.child("saveBlogPosts").child(postId).setValue(true)
                             .addOnSuccessListener {
-                                // Update the ui
-
-                                val clickedBlogItem = items.find { it.postId == postId }
-                                clickedBlogItem?.isSaved = true
+                                items.find { it.postId == postId }?.isSaved = true
                                 notifyDataSetChanged()
-
-                                val context = binding.root.context
-                                Toast.makeText(context, "Blog Saved", Toast.LENGTH_SHORT).show()
                             }
-                            .addOnFailureListener {
-                                val context = binding.root.context
-                                Toast.makeText(
-                                    context,
-                                    "Failed to save the Blog",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        // Change the save button icon
-                        binding.postSaveButton.setImageResource(R.drawable.redsavesign)
+                        postSaveButton.setImageResource(R.drawable.redsavesign)
                     }
-
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
+                override fun onCancelled(error: DatabaseError) {}
             })
     }
 
