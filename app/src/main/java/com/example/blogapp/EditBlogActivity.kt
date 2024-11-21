@@ -1,42 +1,46 @@
 package com.example.blogapp
 
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.blogapp.Model.BlogItemModel
-import com.example.blogapp.databinding.ActivityEditBlogBinding
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.FirebaseDatabase
 
 class EditBlogActivity : AppCompatActivity() {
-    private val binding: ActivityEditBlogBinding by lazy {
-        ActivityEditBlogBinding.inflate(layoutInflater)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(binding.root)
+        setContentView(R.layout.activity_edit_blog)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding.addImageButton.setOnClickListener {
+        val backButton = findViewById<ImageButton>(R.id.addImageButton)
+        val blogTitle = findViewById<TextInputLayout>(R.id.blogTitle)
+        val blogDescription = findViewById<TextInputLayout>(R.id.blogDescription)
+        val editBlogButton = findViewById<Button>(R.id.editBlogButton)
+
+        backButton.setOnClickListener {
             finish()
         }
 
         val blogItemModel = intent.getParcelableExtra<BlogItemModel>("blogItem")
 
-        binding.blogTitle.editText?.setText(blogItemModel?.heading)
-        binding.blogDescription.editText?.setText(blogItemModel?.post)
+        blogTitle.editText?.setText(blogItemModel?.heading)
+        blogDescription.editText?.setText(blogItemModel?.post)
 
-        binding.editBlogButton.setOnClickListener {
-            val updatedTitle = binding.blogTitle.editText?.text.toString().trim()
-            val updatedDescription = binding.blogDescription.editText?.text.toString().trim()
+        editBlogButton.setOnClickListener {
+            val updatedTitle = blogTitle.editText?.text.toString().trim()
+            val updatedDescription = blogDescription.editText?.text.toString().trim()
 
             if (updatedTitle.isEmpty() || updatedDescription.isEmpty()) {
                 Toast.makeText(this, "Please fill all the details", Toast.LENGTH_SHORT).show()
