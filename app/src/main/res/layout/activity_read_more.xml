@@ -5,18 +5,19 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/readmore_background"
     tools:context=".ReadMoreActivity">
 
     <ImageButton
         android:id="@+id/backButton"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:background="@android:color/transparent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/backsign" />
+        app:srcCompat="@drawable/baseline_arrow_back_ios_new_24" />
 
     <TextView
         android:id="@+id/titleText"
@@ -26,7 +27,7 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/montserrat_semibold"
         android:text="TextView"
-        android:textColor="@color/blue"
+        android:textColor="#16977A"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/backButton"
@@ -54,10 +55,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textSize="12sp"
         android:fontFamily="@font/montserrat_light"
-        android:textColor="@color/black"
         android:text="TextView"
+        android:textColor="@color/black"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView4"
         app:layout_constraintStart_toEndOf="@+id/cardView4"
         app:layout_constraintTop_toTopOf="@+id/cardView4" />
@@ -66,10 +67,10 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="12sp"
-        android:textColor="@color/date_color"
         android:fontFamily="@font/montserrat_light"
+        android:text="TextView"
+        android:textColor="#444444"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/userName"
         app:layout_constraintEnd_toEndOf="@+id/titleText"
         app:layout_constraintTop_toTopOf="@+id/userName" />
@@ -85,13 +86,14 @@
         app:layout_constraintTop_toBottomOf="@+id/cardView4" />
 
     <ScrollView
-        android:layout_width="0dp"
+        android:id="@+id/zoomContainer"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/divider3"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@id/divider3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider3">
 
         <TextView
@@ -99,37 +101,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_light"
-            android:padding="10dp"
-            android:text="TextView"
+            android:padding="16dp"
+            android:scrollbars="vertical"
+            android:text="Lorem ipsum dolor sit amet..."
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
     </ScrollView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:backgroundTint="@color/black"
-        app:tint="@color/white"
-        app:shapeAppearanceOverlay="@style/round"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButton2"
-        app:layout_constraintEnd_toEndOf="@+id/floatingActionButton2"
-        app:srcCompat="@drawable/whiteheart" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/black"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:shapeAppearanceOverlay="@style/round"
-        app:srcCompat="@drawable/redsave"
-        app:tint="@color/red" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
