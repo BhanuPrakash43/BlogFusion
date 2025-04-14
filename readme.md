@@ -33,7 +33,7 @@ A full-featured BlogApp designed to allow users to create, read, update, and del
 ## Setup
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/yourusername/BlogFusion.git
+    git clone https://github.com/BhanuPrakash43/BlogFusion.git
     cd BlogFusion
     ```
 
